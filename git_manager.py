@@ -52,9 +52,16 @@ Thumbs.db
     logging.info(".gitignore file created.")
 
 def add_files():
-    """Add all files to the Git staging area."""
-    run_command("git add .")
+    """Add all files to the Git staging area and log added files."""
+    result = run_command("git add .")
     logging.info("All files added to staging area.")
+    
+    # Log the status after adding files
+    status_output = run_command("git status --short")
+    if status_output:
+        logging.info(f"Files staged for commit:\n{status_output}")
+    else:
+        logging.info("No files staged for commit.")
 
 def commit_changes(message):
     """Commit changes with the given message."""
@@ -102,9 +109,20 @@ def switch_branch(branch_name):
     run_command(f"git checkout {branch_name}")
     logging.info(f"Switched to branch: {branch_name}")
 
+def view_commit_history():
+    """Display the commit history."""
+    try:
+        history = run_command("git log --oneline")
+        logging.info(f"Commit history:\n{history}")
+    except Exception as e:
+        logging.error(f"Failed to retrieve commit history: {e}")
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        repo_url = sys.argv[1]
-        manage_git_operations(repo_url)
+        if sys.argv[1] == "history":
+            view_commit_history()
+        else:
+            repo_url = sys.argv[1]
+            manage_git_operations(repo_url)
     else:
         manage_git_operations()
